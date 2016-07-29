@@ -153,7 +153,8 @@ class Gem::Resolver::InstallerSet < Gem::Resolver::Set
       spec.version.prerelease? and not dep.prerelease?
     end
 
-    res.concat @remote_set.find_all req if consider_remote?
+    dependencies = matching_local[0].spec.dependencies
+    res.concat @remote_set.find_all req if consider_remote? && dependencies.any?
 
     res
   end
