@@ -4,12 +4,6 @@ after_script:
 before_script:
 - util/ci before_script
 language: ruby
-branches:
-  only:
-    - master
-    - auto
-    - /^[\d.]+$/
-    - /.+-stable$/
 rvm:
 - 1.8.7
 - 1.9.2
