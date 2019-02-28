@@ -5,6 +5,7 @@ require 'rubygems/request/connection_pools'
 require 'rubygems/s3_uri_signer'
 require 'rubygems/uri_formatter'
 require 'rubygems/user_interaction'
+require 'rubygems/core_ext/tcpsocket_init'
 require 'resolv'
 require 'rubygems/deprecate'
 
