@@ -10,32 +10,34 @@ module CoreExtensions
       CONNECTION_TIMEOUT = 5
 
       def initialize(host, serv, *rest)
+        conns = []
         mutex = Mutex.new
-        addrs = []
+        errors = Queue.new
         cond_var = ConditionVariable.new
 
         Addrinfo.foreach(host, serv, nil, :STREAM) do |addr|
-          Thread.report_on_exception = false if defined? Thread.report_on_exception = ()
           Thread.new(addr) do
-            # raises Errno::ECONNREFUSED when ip:port is unreachable
-            Socket.tcp(addr.ip_address, serv).close
-            mutex.synchronize do
-              addrs << addr.ip_address
-              cond_var.signal
+            begin
+              conn = super(addr.ip_address, serv, *rest)
+              mutex.synchronize do
+                conns << conn
+                cond_var.signal
+              end
+            rescue Exception => e
+              errors << e
             end
           end
         end
 
         mutex.synchronize do
           timeout_time = CONNECTION_TIMEOUT + Time.now.to_f
-          while addrs.empty? && (remaining_time = timeout_time - Time.now.to_f) > 0
+          while conns.empty? && (remaining_time = timeout_time - Time.now.to_f) > 0
             cond_var.wait(mutex, remaining_time)
           end
 
-          host = addrs.shift unless addrs.empty?
+          raise errors.pop if conns.empty?
+          conns.shift
         end
-
-        super(host, serv, *rest)
       end
     end
   end
