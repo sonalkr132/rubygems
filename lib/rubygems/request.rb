@@ -254,6 +254,15 @@ class Gem::Request
 
       retried = true
       retry
+    rescue Net::OpenTimeout
+      raise if retried?
+
+      @uri.host = Addrinfo.foreach(@uri.host, @uri.port, :INET, :STREAM).first.ip_address
+      reset connection
+
+      connection = connection_for @uri
+      retried = true
+      retry
     end
 
     response

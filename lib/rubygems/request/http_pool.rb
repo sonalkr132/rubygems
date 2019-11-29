@@ -9,11 +9,13 @@ class Gem::Request::HTTPPool # :nodoc:
 
   attr_reader :cert_files, :proxy_uri
 
+  OPEN_TIMEOUT = 30
+
   def initialize(http_args, cert_files, proxy_uri)
-    @http_args  = http_args
-    @cert_files = cert_files
-    @proxy_uri  = proxy_uri
-    @queue      = SizedQueue.new 1
+    @http_args     = http_args
+    @cert_files    = cert_files
+    @proxy_uri     = proxy_uri
+    @queue         = SizedQueue.new 1
     @queue << nil
   end
 
@@ -41,7 +43,7 @@ class Gem::Request::HTTPPool # :nodoc:
   end
 
   def setup_connection(connection)
-    connection.start
+    connection.start() { |http| http.open_timeout = OPEN_TIMEOUT }
     connection
   end
 
