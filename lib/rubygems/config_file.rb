@@ -279,8 +279,6 @@ if you believe they were disclosed to a third party.
 
     if @api_keys.key? :rubygems_api_key
       @rubygems_api_key    = @api_keys[:rubygems_api_key]
-      @api_keys[:rubygems] = @api_keys.delete :rubygems_api_key unless
-        @api_keys.key? :rubygems
     end
   end
 
