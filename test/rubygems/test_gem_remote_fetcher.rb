@@ -632,6 +632,23 @@ PeIQQkFng2VVot/WAQbv3ePqWq07g1BBcwIBAg==
     assert_equal "murphy", fetcher.fetch_path(@server_uri)
   end
 
+  def test_ipv6_fallback
+    with_configured_fetcher(":ipv4_fallback_enabled: true") do |fetcher|
+      original_hosts = File.read("/etc/hosts").strip
+      init_cmd = %Q(
+        echo -e "127.0.0.1 dualstackhost.com\n::1 dualstackhost.com" | sudo tee -a /etc/hosts
+        sudo ip6tables -P INPUT DROP
+      )
+      `#{init_cmd}`
+      fetcher.fetch_http(URI.parse("http://dualstackhost.com:#{normal_server_port}/yaml"))
+      restore_cmd = %Q(
+        echo "#{original_hosts}" | sudo tee /etc/hosts
+        sudo ip6tables -P INPUT ACCEPT
+      )
+      `#{restore_cmd}`
+    end
+  end
+
   def assert_fetch_s3(url, signature, token=nil, region='us-east-1', instance_profile_json=nil)
     fetcher = Gem::RemoteFetcher.new nil
     @fetcher = fetcher
