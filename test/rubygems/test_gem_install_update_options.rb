@@ -192,4 +192,12 @@ class TestGemInstallUpdateOptions < Gem::InstallerTestCase
 
     assert_equal true, @cmd.options[:post_install_message]
   end
+
+  def test_ipv4_fallback_enabled
+    Gem.configuration.ipv4_fallback_enabled = false
+
+    @cmd.handle_options %W[--ipv4-fallback-enabled]
+
+    assert_equal true, Gem.configuration.ipv4_fallback_enabled
+  end
 end

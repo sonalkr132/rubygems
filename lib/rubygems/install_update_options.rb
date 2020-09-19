@@ -19,8 +19,7 @@ module Gem::InstallUpdateOptions
 
   def add_install_update_options
     add_option(:"Install/Update", '--ipv4-fallback-enabled',
-          'Gem repository directory to get installed',
-          'gems') do |value, options|
+          'Fallback to IPv4 when IPv6 is not reachable or slow') do |value, options|
       Gem.configuration.ipv4_fallback_enabled = value
     end
 
